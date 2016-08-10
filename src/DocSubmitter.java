@@ -52,7 +52,7 @@ public class DocSubmitter {
             FileInputStream fin = new FileInputStream(docName);
             XWPFDocument doc = new XWPFDocument(fin);
             XWPFWordExtractor extr = new XWPFWordExtractor(doc);
-            content =  extr.getText().replaceAll("[^(\\u4e00-\\u9fa5)]","");
+            content =  extr.getText();
             List<XWPFParagraph> paras = doc.getParagraphs();
             for(int i = 0;i<paras.size();i++){
                 paragraphs.add(paras.get(i).getText());
@@ -76,7 +76,7 @@ public class DocSubmitter {
     public void build(){
         for(int i = 0;i<paragraphs.size();i++){
             String raw_para = paragraphs.get(i);
-            String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)]","");
+            String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]","");
             List<Term> result = NlpAnalysis.parse(para);
             for(Term w:result){
                 if(!wordMap.containsKey(w.getName())){
@@ -96,7 +96,9 @@ public class DocSubmitter {
         KeyWordComputer kwc = new KeyWordComputer(10);
         for(int i = 0;i<paragraphs.size();i++){
             String raw_para = paragraphs.get(i);
-            String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)]","");
+            int end = raw_para.lastIndexOf("\r");
+            if(end!=-1)raw_para = raw_para.substring(0,end);
+            String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]","");
             List<Keyword> keywords = kwc.computeArticleTfidf(para);
             for(Keyword w:keywords){
                 if(!keywordMap.containsKey(w.getName())){

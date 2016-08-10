@@ -12,12 +12,14 @@ class RegulationRecord{
     String wordContext;
     String rawWordContext;
     Integer contexId;
-    RegulationRecord(String wn,String rdn,String wc,String rwc,Integer cid){
+    Integer docId;
+    RegulationRecord(String wn,String rdn,String wc,String rwc,Integer cid,Integer did){
         this.wordName=wn;this.regulationDocName=rdn;
         this.wordContext = wc;this.contexId = cid;
-        this.rawWordContext = rwc;
+        this.rawWordContext = rwc;this.docId = did;
     }
 }
+
 public class RegulationStorager {
     Vector<RegulationDoc> regulationDocs;
     Vector<RegulationRecord> regulationRecords;
@@ -37,7 +39,7 @@ public class RegulationStorager {
                 Vector<Paragraph> paras= e.getValue().paragraph;
                 for(int j = 0;j<paras.size();j++){
                     Paragraph para = paras.get(j);
-                    regulationRecords.add(new RegulationRecord(wordName,regulationDocName,para.content,para.raw_content,para.id));
+                    regulationRecords.add(new RegulationRecord(wordName,regulationDocName,para.content,para.raw_content,para.id,i));
                 }
             }
         }

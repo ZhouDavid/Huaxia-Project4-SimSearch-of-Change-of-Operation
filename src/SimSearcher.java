@@ -30,6 +30,7 @@ class Entity implements Comparable<Entity>{//最终的查询结果类（每行�
 public class SimSearcher {
     public InvertedListBuilder builder;
     public DocSubmitter submitter;
+    public RegulationUploader uploader;
     public SimSearcher(String listFileName,String submitFileName)throws Exception{
         builder = new InvertedListBuilder(listFileName);
         submitter = new DocSubmitter(submitFileName);
@@ -37,6 +38,10 @@ public class SimSearcher {
     public SimSearcher(InvertedListBuilder builder,DocSubmitter submitter){
         this.builder=builder;
         this.submitter = submitter;
+    }
+    public SimSearcher(RegulationUploader uploader,DocSubmitter submitter){
+        this.uploader=uploader;
+        this.submitter=submitter;
     }
 //    public SimSearcher(){
 //
@@ -51,7 +56,7 @@ public class SimSearcher {
             Vector<Paragraph> paras = rawResult.get(i).getValue().paragraph;
             String dn = rawResult.get(i).getValue().docName;
             for(int j = 0;j<paras.size();j++){
-                totalResult.add(new Entity(wn,ct,dn,paras.get(j).content,scid,paras.get(j).id));
+                totalResult.add(new Entity(wn,ct,dn,paras.get(j).raw_content,scid,paras.get(j).id));
             }
         }
 //        Collections.sort(finalResult);
@@ -93,11 +98,11 @@ public class SimSearcher {
             Map.Entry<String,Vector<Paragraph>>entry = entries.next();
             String word = entry.getKey();
             Vector<Paragraph> paras = entry.getValue();
-            for(int i = 0;i<builder.docs.size();i++){
-                HashMap<String,WordRecord> map= builder.docs.get(i).invertedList;
+            for(int i = 0;i<uploader.regulationDocs.size();i++){
+                HashMap<String,WordRecord> map= uploader.regulationDocs.get(i).invertedList;
                 if(map.containsKey(word)){
                     for(int j = 0;j<paras.size();j++){
-                        Pair<wordContext,WordRecord>p=new Pair<>(new wordContext(word,paras.get(j).content,paras.get(j).id),map.get(word));
+                        Pair<wordContext,WordRecord>p=new Pair<>(new wordContext(word,paras.get(j).raw_content,paras.get(j).id),map.get(word));
                         result.add(p);
                     }
                 }

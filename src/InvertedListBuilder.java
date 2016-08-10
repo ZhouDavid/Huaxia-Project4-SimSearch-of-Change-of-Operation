@@ -54,12 +54,17 @@ class RegulationDoc{
         List<Term>result = NlpAnalysis.parse(content);
         return result;
     }
-
     RegulationDoc(String doc_name,String content,Vector<Paragraph>paras){
         this.doc_name = doc_name;
         this.content = content;
         this.paragraphs = paras;
     }
+    RegulationDoc(){}
+    public void addInvertedList(String[] record){
+        
+    }
+
+
 }
 
 public class InvertedListBuilder {
@@ -78,13 +83,13 @@ public class InvertedListBuilder {
         FileInputStream fis= new FileInputStream(new File(filename));
         HWPFDocument doc = new HWPFDocument(fis);
         WordExtractor wordExtractor = new WordExtractor(doc);
-        String content = wordExtractor.getText().replaceAll("[^(\\u4e00-\\u9fa5)]","");
+        String content = wordExtractor.getText();
         String []paragraphs = wordExtractor.getParagraphText();
         int li = filename.lastIndexOf("\\");
         String title = filename.substring(li+1,filename.length());
         Vector<Paragraph> ps = new Vector<>();
         for(int i = 0;i<paragraphs.length;i++)
-            ps.add(new Paragraph(paragraphs[i].replaceAll("[^(\\u4e00-\\u9fa5)]",""),
+            ps.add(new Paragraph(paragraphs[i].replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]",""),
                     paragraphs[i],gcid++));
         docs.add(new RegulationDoc(title,content,ps));
     }
