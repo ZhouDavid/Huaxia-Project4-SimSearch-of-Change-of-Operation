@@ -1,10 +1,7 @@
 /**
  * Created by Zhou Jianyu on 2016/7/25.
  */
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -20,8 +17,6 @@ public class Test {
         //建立倒排列表
 //        InvertedListBuilder builder = new InvertedListBuilder("./resource/listFile");
 //        builder.buildAll();
-        DocSubmitter submitter=new DocSubmitter("./resource/公积金系统切换操作手册.doc");
-
         //制度文档存储
 //        RegulationStorager regulationStorager = new RegulationStorager(builder.docs);
 //        regulationStorager.map2record();
@@ -35,23 +30,44 @@ public class Test {
 //        }
 //        storageWriter.close();
         RegulationUploader uploader = new RegulationUploader("store.csv");
-        submitter.build();
-        SimSearcher searcher = new SimSearcher(uploader,submitter);
-        List<Entity>result= searcher.search();
-        String outname = "output.csv";
-        FileOutputStream fout = new FileOutputStream(outname);
-        OutputStreamWriter writer = new OutputStreamWriter(fout);
-        for(int i = 0;i<result.size();i++){
-            String wordName = result.get(i).wordName;
-            String subContext = result.get(i).submitContext;
-            String docName = result.get(i).relatedDocName;
-            String docContext = result.get(i).relatedDocContext;
-            Integer scid = result.get(i).scid;
-            Integer rcid = result.get(i).rcid;
-            String record = wordName+","+subContext+","+scid.toString()+","+docName+","+docContext+","+rcid.toString()+"\r\n";
-            writer.append(record);
+        String changeDocPath="D:\\人智实验室项目\\华夏银行项目\\华夏银行运维变更合规性查验项目\\变更\\";
+        Vector<String> changeDocFileNames = new Vector<>();
+        File f = new File(changeDocPath);
+        if(!f.exists()){System.err.println("path does not exist.");return;}
+        File fa[]=f.listFiles();
+        for(int i = 0;i<fa.length;i++){
+            if(!fa[i].isDirectory())changeDocFileNames.add(fa[i].getAbsolutePath());
         }
-        writer.close();
+        String root = "./result/";
+        for(Integer i = 2;i<changeDocFileNames.size();i++){
+            System.err.println(changeDocFileNames.get(i));
+            DocSubmitter submitter=new DocSubmitter(changeDocFileNames.get(i));
+            submitter.build();
+            SimSearcher searcher = new SimSearcher(uploader,submitter);
+            List<Entity>result = searcher.search();
+            String outname = root+"result"+i.toString()+".csv";
+            FileOutputStream fout = new FileOutputStream(outname);
+            OutputStreamWriter writer = new OutputStreamWriter(fout,"GBK");
+            Integer lastScid=new Integer(-1);
+            Integer lastRcid=new Integer(-1);
+            String Titles = "scid,context,doc_name,doc_context,rcid\n";
+            writer.append(Titles);
+            for(int ii = 0;ii<result.size();ii++) {
+                String wordName = result.get(ii).wordName;
+                String subContext = result.get(ii).submitContext;
+                String docName = result.get(ii).relatedDocName;
+                String docContext = result.get(ii).relatedDocContext;
+                Integer scid = result.get(ii).scid;
+                Integer rcid = result.get(ii).rcid;
+                String record = scid.toString() + ",\"" + subContext + "\"," + docName + ",\"" + docContext + "\","+rcid.toString()+"\r\n";
+                if (lastScid.equals(scid) && lastRcid.equals(rcid)) continue;
+                lastScid = scid;
+                lastRcid = rcid;
+                writer.append(record);
+            }
+            writer.close();
+        }
+
 //        String filename =
 //                "D:\\人智实验室项目\\华夏银行项目\\华夏银行运维变更合规性查验项目\\制度文档-做合规检查的应用\\华银制〔2014〕197号__华夏银行信息系统设备管理办法\\附件：1.华夏银行总行信息系统设备验收流程.doc";
 //        builder.parseWord(filename);
