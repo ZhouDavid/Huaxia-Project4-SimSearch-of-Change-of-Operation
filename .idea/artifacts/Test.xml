@@ -1,0 +1,23 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Test">
+    <output-path>$PROJECT_DIR$</output-path>
+    <root id="archive" name="src.jar">
+      <element id="module-output" name="src" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/poi-3.9-20121203.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../ansj/lib/nlp-lang-1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../ansj/lib/ansj_seg-2.0.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../ansj/lib/tree_split-1.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/ooxml-lib/dom4j-1.6.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/poi-scratchpad-3.9-20121203.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/poi-ooxml-schemas-3.9-20121203.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/lib/junit-3.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/lib/log4j-1.2.13.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/lib/commons-codec-1.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/lib/commons-logging-1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/ooxml-lib/xmlbeans-2.3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/ooxml-lib/stax-api-1.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/poi-examples-3.9-20121203.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../poi-3.9/poi-ooxml-3.9-20121203.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

@@ -24,19 +24,21 @@ class wordContext{
     String name;
     String context;
     Integer scid;
-    wordContext(String name,String context,Integer scid){
+    Integer wordNum;
+    wordContext(String name,String context,Integer scid,Integer wordNum){
         this.name=name;this.context=context;this.scid = scid;
+        this.wordNum = wordNum;
     }
 }
 class Paragraph {
     String raw_content;
     String content;
     Integer id;
-
-    Paragraph(String content,String raw_content, Integer id) {
+    Integer wordNum;
+    Paragraph(String content,String raw_content, Integer id,Integer wordNum) {
         this.content = content;
         this.raw_content = raw_content;
-        this.id = id;
+        this.id = id;this.wordNum = wordNum;
     }
 }
 public class DocSubmitter {
@@ -74,25 +76,26 @@ public class DocSubmitter {
         keywordMap= new HashMap<>();
     }
     public void build(){
-        for(int i = 0;i<paragraphs.size();i++){
-            String raw_para = paragraphs.get(i);
-            String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]","");
-            List<Term> result = NlpAnalysis.parse(para);
-            for(Term w:result){
-                if(!wordMap.containsKey(w.getName())){
-                    Vector<Paragraph> p =new Vector<Paragraph>();
-                    p.add(new Paragraph(para,raw_para,i));
-                    wordMap.put(w.getName(),p);
-                }
-                else{
-                    Vector<Paragraph>p= wordMap.get(w.getName());
-                    if(!p.contains(para)){
-                        p.add(new Paragraph(para,raw_para,i));
-                        wordMap.put(w.getName(),p);
-                    }
-                }
-            }
-        }
+//        for(int i = 0;i<paragraphs.size();i++){
+//            String raw_para = paragraphs.get(i);
+//            String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]","");
+//            List<Term> result = NlpAnalysis.parse(para);
+//            Integer wordNum = result.size();
+//            for(Term w:result){
+//                if(!wordMap.containsKey(w.getName())){
+//                    Vector<Paragraph> p =new Vector<Paragraph>();
+//                    p.add(new Paragraph(para,raw_para,i,wordNum));
+//                    wordMap.put(w.getName(),p);
+//                }
+//                else{
+//                    Vector<Paragraph>p= wordMap.get(w.getName());
+//                    if(!p.contains(para)){
+//                        p.add(new Paragraph(para,raw_para,i,wordNum));
+//                        wordMap.put(w.getName(),p);
+//                    }
+//                }
+//            }
+//        }
         KeyWordComputer kwc = new KeyWordComputer(10);
         for(int i = 0;i<paragraphs.size();i++){
             String raw_para = paragraphs.get(i);
@@ -100,16 +103,17 @@ public class DocSubmitter {
             if(end!=-1)raw_para = raw_para.substring(0,end);
             String para = paragraphs.get(i).replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]","");
             List<Keyword> keywords = kwc.computeArticleTfidf(para);
+            Integer wordNum = keywords.size();
             for(Keyword w:keywords){
                 if(!keywordMap.containsKey(w.getName())){
                     Vector<Paragraph> p =new Vector<Paragraph>();
-                    p.add(new Paragraph(para,raw_para,i));
+                    p.add(new Paragraph(para,raw_para,i,wordNum));
                     keywordMap.put(w.getName(),p);
                 }
                 else{
                     Vector<Paragraph>ps= keywordMap.get(w.getName());
                     if(!ps.contains(para)){
-                        ps.add(new Paragraph(para,raw_para,i));
+                        ps.add(new Paragraph(para,raw_para,i,wordNum));
                         keywordMap.put(w.getName(),ps);
                     }
                 }

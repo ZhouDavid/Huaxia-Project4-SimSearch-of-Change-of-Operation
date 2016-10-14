@@ -10,11 +10,11 @@ public class RegulationUploader {
         regulationDocs=new Vector<>();
         BufferedReader reader;
         try{
-            InputStreamReader isr = new InputStreamReader(new FileInputStream(storageFilename));
+            InputStreamReader isr = new InputStreamReader(new FileInputStream(storageFilename),"GBK");
             reader = new BufferedReader(isr);
             String line = reader.readLine();
             while(line!=null){
-                String []elements=line.split(",");
+                String []elements=line.split("@");
                 Integer docId=new Integer(0);
                 try{
                     docId = Integer.parseInt(elements[0]);
@@ -22,8 +22,9 @@ public class RegulationUploader {
                     int m =1;
                 }
                 String word = elements[1];
-                String docName = elements[2];
-                Paragraph para = new Paragraph(elements[4].replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]",""),elements[4],Integer.parseInt(elements[3]));
+                String swid = elements[2];
+                String docName = elements[3];
+                Paragraph para = new Paragraph(elements[5].replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]",""),elements[5],Integer.parseInt(elements[4]),Integer.parseInt(elements[6]));
                 if(regulationDocs.size()<=docId){
                     RegulationDoc rd = new RegulationDoc();
                     Vector<Paragraph> paras = new Vector<>();

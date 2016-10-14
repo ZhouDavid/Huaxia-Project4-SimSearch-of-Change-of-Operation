@@ -36,6 +36,8 @@ class RegulationDoc{
          */
         for(int i = 0;i<paragraphs.size();i++){
             List<Term>words = splitWords(paragraphs.get(i).content);
+            Integer wordNum = words.size();
+            paragraphs.get(i).wordNum = wordNum;
             for(Term w : words){
                 if(!invertedList.containsKey(w.getName())){//该词尚未加入词典中,则插入一条新的词语记录
                     Vector<Paragraph> p=new Vector<>();
@@ -78,30 +80,43 @@ public class InvertedListBuilder {
     Vector<String>docNameList = new Vector<>();
     Integer gcid = new Integer(0);
     public Vector<RegulationDoc> docs=new Vector<>();
-    InvertedListBuilder(String docNameListFileName)throws Exception{
-        BufferedReader reader = new BufferedReader(new FileReader(docNameListFileName));
-        String line = reader.readLine();
-        while(line!=null){
-            docNameList.add(line);
-            line = reader.readLine();
+    public void getFileNames(String root){
+        File file = new File(root);
+        File[] tmpList = file.listFiles();
+        for(int i = 0;i<tmpList.length;i++){
+            if(tmpList[i].isFile()){
+                docNameList.add(tmpList[i].toString());
+            }
+            else if(tmpList[i].isDirectory()){
+                getFileNames(tmpList[i].toString());
+            }
         }
     }
-    public void parseWord(String filename)throws Exception{
+    InvertedListBuilder(String regulationDocRoot)throws Exception{
+        getFileNames(regulationDocRoot);
+    }
+    public void parseWord(String filename){
         /*
         提取word文档中的文本内容
          */
-        FileInputStream fis= new FileInputStream(new File(filename));
-        HWPFDocument doc = new HWPFDocument(fis);
-        WordExtractor wordExtractor = new WordExtractor(doc);
-        String content = wordExtractor.getText();//存储文档全部内容
-        String []paragraphs = wordExtractor.getParagraphText();  //按段落存储
-        int li = filename.lastIndexOf("\\");
-        String title = filename.substring(li+1,filename.length());
-        Vector<Paragraph> ps = new Vector<>();
-        for(int i = 0;i<paragraphs.length;i++)
-            ps.add(new Paragraph(paragraphs[i].replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]",""),
-                    paragraphs[i],gcid++));
-        docs.add(new RegulationDoc(title,content,ps));
+        System.out.println(filename);
+        try{
+            FileInputStream fis= new FileInputStream(new File(filename));
+            HWPFDocument doc = new HWPFDocument(fis);
+            WordExtractor wordExtractor = new WordExtractor(doc);
+            String content = wordExtractor.getText();//存储文档全部内容
+            String []paragraphs = wordExtractor.getParagraphText();  //按段落存储
+            int li = filename.lastIndexOf("\\");
+            String title = filename.substring(li+1,filename.length());
+            Vector<Paragraph> ps = new Vector<>();
+            for(int i = 0;i<paragraphs.length;i++)
+                ps.add(new Paragraph(paragraphs[i].replaceAll("[^(\\u4e00-\\u9fa5)a-zA-Z0-9]",""),
+                        paragraphs[i],gcid++,0));
+            docs.add(new RegulationDoc(title,content,ps));
+        }catch(IOException e){
+            return;
+        }
+
     }
 
     public void buildAll()throws Exception{
@@ -112,8 +127,8 @@ public class InvertedListBuilder {
             docs.get(i).build();
         }
     }
-
-    public void storeList()throws Exception{
-
-    }
+//
+//    public void storeList()throws Exception{
+//
+//    }
 }

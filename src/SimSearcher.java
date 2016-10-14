@@ -18,10 +18,12 @@ class Entity implements Comparable<Entity>{//最终的查询结果类（每行�
     String relatedDocContext;
     Integer scid;
     Integer rcid;
-    Entity(String w,String s,String rdn,String rdc,Integer scid,Integer rcid){
+    Double similarity;
+    Entity(String w,String s,String rdn,String rdc,Integer scid,Integer rcid,Double sim){
         this.wordName=w;this.submitContext=s;
         this.relatedDocName=rdn;this.relatedDocContext=rdc;
         this.scid = scid;this.rcid = rcid;
+        this.similarity = sim;
     }
     public int compareTo(Entity e){
         return this.relatedDocContext.compareTo(e.relatedDocContext);
@@ -53,14 +55,17 @@ public class SimSearcher {
             String wn = rawResult.get(i).getKey().name;
             String ct = rawResult.get(i).getKey().context;
             Integer scid = rawResult.get(i).getKey().scid;
+            Double len1 = new Double(rawResult.get(i).getKey().wordNum);
+
             Vector<Paragraph> paras = rawResult.get(i).getValue().paragraph;
             String dn = rawResult.get(i).getValue().docName;
+
             for(int j = 0;j<paras.size();j++){
-                totalResult.add(new Entity(wn,ct,dn,paras.get(j).raw_content,scid,paras.get(j).id));
+                Double len2 = new Double(paras.get(j).wordNum);
+                totalResult.add(new Entity(wn,ct,dn,paras.get(j).raw_content,scid,paras.get(j).id,len1+len2));
             }
         }
-//        Collections.sort(finalResult);
-        int threshold = 3;
+        int threshold = 3;   //
         HashMap<String,Count> counter=new HashMap<>();
         for(int i = 0;i<totalResult.size();i++){
             try {
@@ -84,6 +89,7 @@ public class SimSearcher {
             if(e.getValue().count>=threshold){
                 for(int i = 0;i<e.getValue().id.size();i++){
                     int index = e.getValue().id.get(i);
+                    totalResult.get(index).similarity = 2*new Double(e.getValue().count)/totalResult.get(index).similarity;
                     filteredResult.add(totalResult.get(index));
                 }
             }
@@ -102,7 +108,7 @@ public class SimSearcher {
                 HashMap<String,WordRecord> map= uploader.regulationDocs.get(i).invertedList;
                 if(map.containsKey(word)){
                     for(int j = 0;j<paras.size();j++){
-                        Pair<wordContext,WordRecord>p=new Pair<>(new wordContext(word,paras.get(j).raw_content,paras.get(j).id),map.get(word));
+                        Pair<wordContext,WordRecord>p=new Pair<>(new wordContext(word,paras.get(j).raw_content,paras.get(j).id,paras.get(j).wordNum),map.get(word));
                         result.add(p);
                     }
                 }
